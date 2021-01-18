@@ -13,19 +13,18 @@ class TestCase
     raise AssertionError, "#{result}" unless result
   end
 
+  def set_up
+    #  noop
+  end
+
   def run
     set_up
     send @name
   end
-
-  def set_up
-    @was_run = nil
-    @was_set_up = true
-  end
 end
 
 class WasRun < TestCase
-  attr_reader :was_run, :was_set_up
+  attr_reader :was_run, :was_set_up, :log
 
   def initialize(name)
     @was_run = false
@@ -34,30 +33,32 @@ class WasRun < TestCase
     super(name)
   end
 
-  def test_method
-    @was_run = true
+  def set_up
+    @was_run = nil
+    @was_set_up = true
+    @log = "Setup "
   end
 
   def was_set_up
     @was_set_up = true
   end
+
+  def test_method
+    @was_run = true
+    @log << 'test_method '
+  end
 end
 
 class TestCaseTest < TestCase
   def set_up
+    # noop
+  end
+
+  def test_template_method
     @test = WasRun.new('test_method')
-  end
-
-  def test_running
     @test.run
-    assert { @test.was_run }
-  end
-
-  def test_set_up
-    @test.run
-    assert { @test.was_set_up }
+    assert { @test.log == 'Setup test_method ' }
   end
 end
 
-TestCaseTest.new('test_running').run
-TestCaseTest.new('test_set_up').run
+TestCaseTest.new('test_template_method').run
