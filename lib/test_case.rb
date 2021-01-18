@@ -16,10 +16,8 @@ class TestCase
     # noop
   end
 
-  def run
-    result = TestResult.new
+  def run(result)
     result.test_started
-
     set_up
 
     begin
@@ -29,8 +27,6 @@ class TestCase
     end
 
     tear_down
-
-    result
   end
 
   def tear_down

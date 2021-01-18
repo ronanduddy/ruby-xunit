@@ -1,37 +1,61 @@
 require 'pry'
 require_relative '../lib/test_case'
 require_relative '../lib/was_run'
+require_relative '../lib/test_suite'
 
 class TestCaseTest < TestCase
   def set_up
-    @test = WasRun.new('test_method')
+    @result = TestResult.new
   end
 
   def test_template_method
-    @test.run
-    assert { @test.log == 'set_up test_method tear_down ' }
+    test = WasRun.new('test_method')
+    test.run(@result)
+
+    assert { test.log == 'set_up test_method tear_down ' }
   end
 
   def test_result
-    result = @test.run
-    assert { result.summary == '1 run, 0 failed' }
+    test = WasRun.new('test_method')
+    test.run(@result)
+
+    assert { @result.summary == '1 run, 0 failed' }
   end
 
   def test_failed_result
-    @test = WasRun.new('test_broken_method')
-    result = @test.run
-    assert { result.summary == '1 run, 1 failed' }
+    test = WasRun.new('test_broken_method')
+    test.run(@result)
+
+    assert { @result.summary == '1 run, 1 failed' }
   end
 
   def test_failed_result_formatting
-    result = TestResult.new
-    result.test_started
-    result.test_failed
-    assert { result.summary == '1 run, 1 failed' }
+    @result.test_started
+    @result.test_failed
+
+    assert { @result.summary == '1 run, 1 failed' }
+  end
+
+  def test_suite
+    suite = TestSuite.new
+
+    suite << WasRun.new('test_method')
+    suite << WasRun.new('test_broken_method')
+
+    suite.run(@result)
+
+    assert { @result.summary == '2 run, 1 failed' }
   end
 end
 
-p TestCaseTest.new('test_template_method').run.summary
-p TestCaseTest.new('test_result').run.summary
-p TestCaseTest.new('test_failed_result_formatting').run.summary
-p TestCaseTest.new('test_failed_result').run.summary
+suite = TestSuite.new
+suite << TestCaseTest.new('test_template_method')
+suite << TestCaseTest.new('test_result')
+suite << TestCaseTest.new('test_failed_result_formatting')
+suite << TestCaseTest.new('test_failed_result')
+suite << TestCaseTest.new('test_suite')
+
+result = TestResult.new
+suite.run(result)
+
+p result.summary
