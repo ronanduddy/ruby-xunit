@@ -21,7 +21,13 @@ class TestCase
     result.test_started
 
     set_up
-    send @name
+
+    begin
+      send @name
+    rescue
+      result.test_failed
+    end
+
     tear_down
 
     result
