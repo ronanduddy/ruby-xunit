@@ -26,6 +26,7 @@ class TestCase
       result.test_failed
     end
 
+  ensure
     tear_down
   end
 
