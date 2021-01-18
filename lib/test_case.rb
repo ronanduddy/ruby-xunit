@@ -12,11 +12,16 @@ class TestCase
   end
 
   def set_up
-    #  noop
+    # noop
   end
 
   def run
     set_up
     send @name
+    tear_down
+  end
+
+  def tear_down
+    # noop
   end
 end
