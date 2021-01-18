@@ -6,9 +6,8 @@ class TestCase
   end
 
   def assert(&block)
-    raise AssertionError, 'Must supply block' unless block_given?
-    result = yield
-    raise AssertionError, "#{result}" unless result
+    raise AssertionError, 'Must supply block' unless block_given?    
+    error(block) unless yield
   end
 
   def set_up
@@ -23,5 +22,17 @@ class TestCase
 
   def tear_down
     # noop
+  end
+
+  private
+
+  def error(block)
+    location = block.source_location
+    file = location.first
+    line = location.last
+    assertion = block.source.strip
+
+    message = "#{assertion} failed for #{file}:#{line}"
+    raise AssertionError, message
   end
 end
