@@ -23,6 +23,10 @@ class WasRun < TestCase
     @log << 'test_method '
   end
 
+  def test_broken_method
+    raise Exception
+  end
+
   def tear_down
     @log << 'tear_down '
   end

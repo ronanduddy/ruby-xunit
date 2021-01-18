@@ -1,3 +1,5 @@
+require_relative 'test_result'
+
 class TestCase
   AssertionError = Class.new(RuntimeError)
 
@@ -6,7 +8,7 @@ class TestCase
   end
 
   def assert(&block)
-    raise AssertionError, 'Must supply block' unless block_given?    
+    raise AssertionError, 'Must supply block' unless block_given?
     error(block) unless yield
   end
 
@@ -15,9 +17,14 @@ class TestCase
   end
 
   def run
+    result = TestResult.new
+    result.test_started
+
     set_up
     send @name
     tear_down
+
+    result
   end
 
   def tear_down
